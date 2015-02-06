@@ -2,7 +2,7 @@
  * drivers/gpu/ion/ion.c
  *
  * Copyright (C) 2011 Google, Inc.
- * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -37,6 +37,13 @@
 #include <mach/iommu_domains.h>
 #include "ion_priv.h"
 #define DEBUG
+
+// #define VERBOSE_IOCTLS
+#ifdef VERBOSE_IOCTLS
+#define  TRACE_IOCTL(fmt...) do { printk(fmt); } while(0)
+#else
+#define TRACE_IOCTL(fmt...) while(0)
+#endif
 
 /**
  * struct ion_device - the metadata of the ion device node
@@ -1355,6 +1362,7 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case ION_IOC_ALLOC:
 	{
 		struct ion_allocation_data data;
+		TRACE_IOCTL("PL:ION_IOC_ALLOC\n");
 
 		if (copy_from_user(&data, (void __user *)arg, sizeof(data)))
 			return -EFAULT;
@@ -1374,6 +1382,7 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	{
 		struct ion_handle_data data;
 		bool valid;
+		TRACE_IOCTL("PL:ION_IOC_FREE\n");
 
 		if (copy_from_user(&data, (void __user *)arg,
 				   sizeof(struct ion_handle_data)))
@@ -1495,7 +1504,10 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		break;
 	}
 	default:
+	{
+	  printk("PL:ION Ioctl, !!!! unknown ioctl command=%X !!!!\n", cmd);
 		return -ENOTTY;
+	}
 	}
 	return 0;
 }
@@ -1695,18 +1707,7 @@ static int ion_debug_heap_show(struct seq_file *s, void *unused)
 	struct ion_device *dev = heap->dev;
 	struct rb_node *n;
 
-/*                    */
-#ifdef CONFIG_MACH_LGE
-/*
-	yongman.kwon : Remove this code for preventing dead lock status between 
-	thread using ion memory.
-	*/
-	/* removed */
-#else /* QCT Original */
 	mutex_lock(&dev->lock);
-#endif
-/*                  */
-
 	seq_printf(s, "%16.s %16.s %16.s\n", "client", "pid", "size");
 
 	for (n = rb_first(&dev->clients); n; n = rb_next(n)) {
@@ -1726,16 +1727,6 @@ static int ion_debug_heap_show(struct seq_file *s, void *unused)
 				   client->pid, size);
 		}
 	}
-	
-/*                    */
-#ifdef CONFIG_MACH_LGE
-/*
-	yongman.kwon : Add this code for preventing dead lock status between
-	thread using ion memory.
-	*/
-	mutex_lock(&dev->lock);
-#endif
-/*                  */
 	ion_heap_print_debug(s, heap);
 	mutex_unlock(&dev->lock);
 	return 0;

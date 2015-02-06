@@ -759,6 +759,9 @@ static struct notifier_block msm_fb_event_notifier = {
 static struct msm_panel_common_pdata mdp_pdata = {
 	.gpio = MDP_VSYNC_GPIO,
 	.mdp_max_clk = 200000000,
+	.mdp_max_bw = 2000000000,
+	.mdp_bw_ab_factor = 115,
+	.mdp_bw_ib_factor = 150,
 #ifdef CONFIG_MSM_BUS_SCALING
 	.mdp_bus_scale_table = &mdp_bus_scale_pdata,
 #endif
@@ -1403,6 +1406,7 @@ static int hdmi_core_power(int on, int show);
 static int hdmi_cec_power(int on);
 static int hdmi_gpio_config(int on);
 static int hdmi_panel_power(int on);
+static bool hdmi_platform_source(void);
 
 static struct msm_hdmi_platform_data hdmi_msm_data = {
 	.irq = HDMI_IRQ,
@@ -1411,6 +1415,7 @@ static struct msm_hdmi_platform_data hdmi_msm_data = {
 	.cec_power = hdmi_cec_power,
 	.panel_power = hdmi_panel_power,
 	.gpio_config = hdmi_gpio_config,
+	.source = hdmi_platform_source,
 };
 
 static struct platform_device hdmi_msm_device = {
@@ -1420,6 +1425,8 @@ static struct platform_device hdmi_msm_device = {
 	.resource = hdmi_msm_resources,
 	.dev.platform_data = &hdmi_msm_data,
 };
+#else
+static int hdmi_panel_power(int on) { return 0; }
 #endif /* CONFIG_FB_MSM_HDMI_MSM_PANEL */
 
 #ifdef CONFIG_FB_MSM_WRITEBACK_MSM_PANEL
@@ -1488,19 +1495,6 @@ static struct lcdc_platform_data dtv_pdata = {
 	.bus_scale_table = &dtv_bus_scale_pdata,
 	.lcdc_power_save = hdmi_panel_power,
 };
-
-static int hdmi_panel_power(int on)
-{
-	int rc;
-
-	pr_debug("%s: HDMI Core: %s\n", __func__, (on ? "ON" : "OFF"));
-	rc = hdmi_core_power(on, 1);
-	if (rc)
-		rc = hdmi_cec_power(on);
-
-	pr_debug("%s: HDMI Core: %s Success\n", __func__, (on ? "ON" : "OFF"));
-	return rc;
-}
 #endif
 #endif
 
@@ -1695,6 +1689,25 @@ static int hdmi_cec_power(int on)
 error:
 	return rc;
 }
+
+static int hdmi_panel_power(int on)
+{
+	int rc;
+
+	pr_debug("%s: HDMI Core: %s\n", __func__, (on ? "ON" : "OFF"));
+	rc = hdmi_core_power(on, 1);
+	if (rc)
+		rc = hdmi_cec_power(on);
+
+	pr_debug("%s: HDMI Core: %s Success\n", __func__, (on ? "ON" : "OFF"));
+	return rc;
+}
+
+static bool hdmi_platform_source(void)
+{
+	return cpu_is_msm8930ab() ? true : false ;
+}
+
 #endif /* CONFIG_FB_MSM_HDMI_MSM_PANEL */
 
 #ifdef CONFIG_LGE_HIDDEN_RESET
@@ -1720,10 +1733,6 @@ static void __init msm_fb_add_devices(void)
 #ifdef CONFIG_FB_MSM_WRITEBACK_MSM_PANEL
 	platform_device_register(&wfd_panel_device);
 	platform_device_register(&wfd_device);
-#endif
-
-#ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
-	platform_device_register(&hdmi_msm_device);
 #endif
 
 	msm_fb_register_device("mdp", &mdp_pdata);

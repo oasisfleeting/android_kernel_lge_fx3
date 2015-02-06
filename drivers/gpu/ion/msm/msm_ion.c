@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -44,6 +44,11 @@ static struct ion_heap_desc ion_heap_meta[] = {
 		.id	= ION_SYSTEM_HEAP_ID,
 		.type	= ION_HEAP_TYPE_SYSTEM,
 		.name	= ION_VMALLOC_HEAP_NAME,
+	},
+	{
+		.id	= ION_SYSTEM_CONTIG_HEAP_ID,
+		.type	= ION_HEAP_TYPE_SYSTEM_CONTIG,
+		.name	= ION_KMALLOC_HEAP_NAME,
 	},
 	{
 		.id	= ION_CP_MM_HEAP_ID,

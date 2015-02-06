@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2013, Linux Foundation. All rights reserved.
+/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -42,6 +42,9 @@
 #define ERR(x...) pr_err(x)
 
 #define VID_DEC_NAME "msm_vidc_dec"
+
+//tcdtcd
+volatile bool vidc_playing = false;
 
 static char *node_name[2] = {"", "_sec"};
 static struct vid_dec_dev *vid_dec_device_p;
@@ -2179,6 +2182,7 @@ static int vid_dec_open_secure(struct inode *inode, struct file *file)
 		goto error;
 	}
 	mutex_unlock(&vid_dec_device_p->lock);
+	vidc_playing = true;//tcd
 	return 0;
 error:
 	mutex_unlock(&vid_dec_device_p->lock);
@@ -2203,6 +2207,7 @@ static int vid_dec_open(struct inode *inode, struct file *file)
 
 	file->private_data = client_ctx;
 	mutex_unlock(&vid_dec_device_p->lock);
+	vidc_playing = true;//tcd
 	return rc;
 }
 
@@ -2219,6 +2224,7 @@ static int vid_dec_release_secure(struct inode *inode, struct file *file)
 	vidc_disable_clk();
 #endif
 	INFO("msm_vidc_dec: Return from %s()", __func__);
+	vidc_playing = false;
 	return 0;
 }
 
@@ -2235,6 +2241,7 @@ static int vid_dec_release(struct inode *inode, struct file *file)
 	vidc_disable_clk();
 #endif
 	INFO("msm_vidc_dec: Return from %s()", __func__);
+	vidc_playing = false;
 	return 0;
 }
 

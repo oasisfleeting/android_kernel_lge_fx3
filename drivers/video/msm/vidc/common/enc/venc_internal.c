@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2010-2012, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -928,7 +928,7 @@ u32 vid_enc_set_get_entropy_cfg(struct video_client_ctx *client_ctx,
 	vcd_property_hdr.sz =
 		sizeof(struct vcd_property_entropy_control);
 	if (set_flag) {
-		switch (entropy_cfg->longentropysel) {
+		switch (entropy_cfg->entropysel) {
 		case VEN_ENTROPY_MODEL_CAVLC:
 			control.entropy_sel = VCD_ENTROPY_SEL_CAVLC;
 			break;

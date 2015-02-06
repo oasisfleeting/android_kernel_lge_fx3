@@ -401,6 +401,9 @@ struct msm_panel_common_pdata {
 	int (*vga_switch)(int select_vga);
 	int *gpio_num;
 	u32 mdp_max_clk;
+	u32 mdp_max_bw;
+	u32 mdp_bw_ab_factor;
+	u32 mdp_bw_ib_factor;
 #ifdef CONFIG_MSM_BUS_SCALING
 	struct msm_bus_scale_pdata *mdp_bus_scale_table;
 #endif
@@ -530,6 +533,7 @@ struct msm_hdmi_platform_data {
 	int (*gpio_config)(int on);
 	int (*init_irq)(void);
 	bool (*check_hdcp_hw_support)(void);
+	bool (*source)(void);
 	bool is_mhl_enabled;
 };
 
@@ -577,6 +581,7 @@ struct msm_vidc_platform_data {
 	int disable_fullhd;
 	u32 cp_enabled;
 	u32 secure_wb_heap;
+	u32 enable_sec_metadata;
 #ifdef CONFIG_MSM_BUS_SCALING
 	struct msm_bus_scale_pdata *vidc_bus_client_pdata;
 #endif
@@ -629,6 +634,7 @@ void mpq8092_init_gpiomux(void);
 struct mmc_platform_data;
 int msm_add_sdcc(unsigned int controller,
 		struct mmc_platform_data *plat);
+int msm_add_uio(void);
 
 void msm_pm_register_irqs(void);
 struct msm_usb_host_platform_data;

@@ -570,13 +570,13 @@ static struct snd_kcontrol_new msm_voice_controls[] = {
 				msm_volte_mute_get, msm_volte_mute_put),
 	SOC_SINGLE_EXT("VoLTE Rx Volume", SND_SOC_NOPM, 0, 5, 0,
 				msm_volte_volume_get, msm_volte_volume_put),
-	SOC_SINGLE_EXT("SGLTE Rx Device Mute", SND_SOC_NOPM, 0, 1, 0,
-				msm_sglte_rx_device_mute_get,
-				msm_sglte_rx_device_mute_put),
-	SOC_SINGLE_EXT("SGLTE Tx Mute", SND_SOC_NOPM, 0, 1, 0,
-				msm_sglte_mute_get, msm_sglte_mute_put),
-	SOC_SINGLE_EXT("SGLTE Rx Volume", SND_SOC_NOPM, 0, 5, 0,
-				msm_sglte_volume_get, msm_sglte_volume_put),
+	SOC_SINGLE_EXT("Voice2 Rx Device Mute", SND_SOC_NOPM, 0, 1, 0,
+		       msm_voice2_rx_device_mute_get,
+		       msm_voice2_rx_device_mute_put),
+	SOC_SINGLE_EXT("Voice2 Tx Mute", SND_SOC_NOPM, 0, 1, 0,
+		       msm_voice2_mute_get, msm_voice2_mute_put),
+	SOC_SINGLE_EXT("Voice2 Rx Volume", SND_SOC_NOPM, 0, 5, 0,
+		       msm_voice2_volume_get, msm_voice2_volume_put),
 };
 
 #else
